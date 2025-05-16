@@ -24,7 +24,11 @@ class TPS:
         A[:n, -4:] = P
         A[-4:, :n] = P.t()
 
-        theta = torch.solve(v, A)[0]
+        # Deprecated since torch==1.9.
+        # Arguments reversed, an only returns solution (no LU factorisation).
+        # theta = torch.solve(v, A)[0]
+        theta = torch.linalg.solve(A, v)
+
         return theta
         
     @staticmethod
