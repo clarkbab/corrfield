@@ -2,17 +2,20 @@ from scipy.sparse import csr_matrix, csgraph
 import torch
 import torch.nn.functional as F
 
-from filters import *
-from utils import *
+from .filters import *
+from .utils import *
 
 def minimum_spanning_tree(dist):
     device = dist.device
     N = dist.shape[1]
-    
     mst = csgraph.minimum_spanning_tree(csr_matrix(dist[0].cpu().numpy()))
-    bfo = csgraph.breadth_first_order(mst, 0, directed=False)
-    edges = torch.tensor([bfo[1][bfo[0]][1:], bfo[0][1:]], dtype=torch.long, device=device).t().view(1, -1, 2)
-
+    # BFO returns the list of reachable nodes in the MST from node 0.
+    # For some cases, not all nodes are reachable - which is weird because
+    # MST should span all nodes. Only use reachable nodes for these cases.
+    bfo_nodes, bfo_pre = csgraph.breadth_first_order(mst, 0, directed=False)
+    if bfo_nodes.shape != bfo_pre.shape:
+        print('issue with MST having non-connected nodes')
+    edges = torch.tensor([bfo_pre[bfo_nodes][1:], bfo_nodes[1:]], dtype=torch.long, device=device).t().view(1, -1, 2)
     level = torch.zeros((1, N, 1), dtype=torch.long, device=device)
     for i in range(N-1):
         level[0, edges[0, i, 1], 0] = level[0, edges[0, i, 0], 0] + 1

@@ -10,18 +10,22 @@ import time
 import torch
 import torch.nn.functional as F
 
-from thin_plate_spline import *
-from foerstner import *
-from utils import *
-from mindssc import *
-from similarity import *
-from belief_propagation import *
-from graphs import *
+from corrfield.thin_plate_spline import *
+from corrfield.foerstner import *
+from corrfield.utils import *
+from corrfield.mindssc import *
+from corrfield.similarity import *
+from corrfield.belief_propagation import *
+from corrfield.graphs import *
 
 def compute_marginals(kpts_fix, img_fix, mind_fix, mind_mov, alpha, beta, disp_radius, disp_step, patch_radius):
     cost = alpha * ssd(kpts_fix, mind_fix, mind_mov, disp_radius, disp_step, patch_radius)
         
+    print('fixed keypoints shape')
+    print(kpts_fix.shape)
     dist = kpts_dist(kpts_fix, img_fix, beta)
+    print('dist shape')
+    print(dist.shape)
     edges, level = minimum_spanning_tree(dist)
     marginals = tbp(cost, edges, level, dist)
     

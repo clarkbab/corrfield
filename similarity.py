@@ -2,7 +2,7 @@ import math
 import torch
 import torch.nn.functional as F
 
-from utils import *
+from .utils import *
 
 def ssd(kpts_fixed, feat_fixed, feat_moving, disp_radius=16, disp_step=2, patch_radius=3, unroll_step_size=2**6):
     device = kpts_fixed.device

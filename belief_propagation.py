@@ -1,6 +1,6 @@
 import torch
 
-from filters import *
+from .filters import *
 
 def tbp(cost, edges, level, dist):
     marginals = cost

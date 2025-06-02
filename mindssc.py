@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from filters import *
-from utils import *
+from .filters import *
+from .utils import *
 
 def mindssc(img, delta=1, sigma=1):
     device = img.device
